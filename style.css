@@ -272,19 +272,19 @@ nav {
 }
 
 .fade-in-init {
-  opacity: 0.6;
-  transform: translateY(1.8vh);  /* relative */
+  opacity: 0;
+  transform: translateY(12px);  /* relative */
 }
 
 /* trigger animation when activated */
 .fade-in-active {
-  animation: fade-in 1600ms ease-out both;
+  animation: fade-in 700ms ease-out both;
 }
 
 @keyframes fade-in {
   from {
-	opacity: 0.6;
-	transform: translateY(1.8vh);  /* relative (consistency) */
+	opacity: 0;
+	transform: translateY(12px);  /* relative (consistency) */
   }
   to {
 	opacity: 1;
