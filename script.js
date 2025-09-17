@@ -197,42 +197,70 @@ document.addEventListener('DOMContentLoaded', () => {
   /* === START: FADE-IN ON SCROLL === */
 
   (function setupScrollFadeIns() {
-	const selector = [
-	  '.project-card',
-	  '.skill-category',
-	  '.project-info',
-	  '.project-image',
-	  '.contact-info',
-	  '.contact-links',
-	  '.contact-form',
-	  '.about-text',
-	  '.skills',
-	  '.resume-wrap',
-	  '.btn'
-	].join(',');
-
-	const ioOptions = {
-	  root: null,
-	  rootMargin: '0px 0px -10% 0px',
-	  threshold: 0.12
-	};
-
-	const observer = new IntersectionObserver((entries, obs) => {
-	  entries.forEach(entry => {
-		if (entry.isIntersecting) {
-		  entry.target.classList.add('fade-in-active');
-		  entry.target.classList.remove('fade-in-init');
-		  // animate once only
-		  obs.unobserve(entry.target);
+	const fadeInGroups = [
+	  // Specialized groups
+	  {
+		selector: '.about-text',
+		options: {
+		  root: null,
+		  rootMargin: '0px 0px -10% 0px',
+		  threshold: 0.07
 		}
-	  });
-	}, ioOptions);
+	  },
+	  
+	  {
+		selector: '.contact-form',
+		options: {
+		  root: null,
+		  rootMargin: '0px 0px -10% 0px',
+		  threshold: 0.12
+		}
+	  },
+	  
+	  // Default group - covers the remaining selectors
+	  {
+		selector: [
+		  '.project-card',
+		  '.skill-category',
+		  '.project-info',
+		  '.project-image',
+		  '.contact-info',
+		  '.contact-links',
+		  '.skills',
+		  '.resume-wrap',
+		  '.btn'
+		].join(','),
+		options: {
+		  root: null,
+		  rootMargin: '0px 0px -25% 0px',
+		  threshold: 0.08
+		}
+	  }
+	];
 
-	document.querySelectorAll(selector).forEach(el => {
-	  // skip if the element is small or already visible
-	  if (el.offsetParent === null) return; // hidden elements ignored
-	  el.classList.add('fade-in-init');
-	  observer.observe(el);
+	// Keep track of elements we've already observed
+	const observed = new Set();
+
+	fadeInGroups.forEach(group => {
+	  const io = new IntersectionObserver((entries, obs) => {
+		entries.forEach(entry => {
+		  if (entry.isIntersecting) {
+			entry.target.classList.add('fade-in-active');
+			entry.target.classList.remove('fade-in-init');
+			// animate once only
+			obs.unobserve(entry.target);
+			observed.add(entry.target);
+		  }
+		});
+	  }, group.options);
+	  document.querySelectorAll(group.selector).forEach(el => {
+		// skip if the element is small or already visible / or already observed
+		if (el.offsetParent === null) return; // hidden elements ignored
+		if (observed.has(el)) return; // already observed by specialzed groups
+		el.classList.add('fade-in-init');
+		io.observe(el);
+		observed.add(el);
+	  });
 	});
   })();
 
